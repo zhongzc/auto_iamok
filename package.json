@@ -1,0 +1,14 @@
+{
+  "name": "auto_iamok",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^0.19.2",
+    "chalk": "^3.0.0",
+    "loglevel": "^1.6.7",
+    "loglevel-plugin-prefix": "^0.8.4",
+    "querystring": "^0.2.0",
+    "readline-sync": "^1.4.10"
+  }
+}
