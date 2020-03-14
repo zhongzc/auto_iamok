@@ -40,4 +40,4 @@ function initLog() {
     log.enableAll();
 }
 
-module.exports = { timeconv: timeConverter, justRedir, initLog };
+module.exports = { timeconv: timeConverter, redirOnce: justRedir, initLog };
