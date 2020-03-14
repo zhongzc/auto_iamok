@@ -13,6 +13,10 @@ const readlineSync = require('readline-sync');
 const sso_url = 'https://sso.scut.edu.cn/cas/login?service=https%3A%2F%2Fiamok.scut.edu.cn%2Fcas%2Flogin';
 const user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36';
 
+console.log(chalk.blue('-----------------\n'))
+console.log(chalk.blue('今天你 IamOK 了吗\n'))
+console.log(chalk.blue('-----------------\n'))
+
 const username = readlineSync.question(`${chalk.cyan('学号: ')}`);
 const password = readlineSync.question(`${chalk.cyan('密码: ')}`, { hideEchoBack: true });
 const raw_interval = readlineSync.question(`${chalk.cyan('上报周期 (单位: 分钟): ')}`);
@@ -119,7 +123,7 @@ function go() {
         }
 
         log.info('下次上报时间:', utils.timeconv(new Date((new Date()).getTime() + interval)))
-        
+
     }).catch((e) => {
         log.error({ '失败:': e });
     });
