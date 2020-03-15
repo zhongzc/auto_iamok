@@ -131,11 +131,19 @@ function getData({ token }) {
             'User-Agent': USER_AGENT,
         }
     }).then(({ data: { data }, config: { headers } }) => {
-        log.info(data);
+        if (data == null) {
+            throw ReferenceError('data 为空，疑似 IamOK 系统出状况');
+        }
+
         log.info('上次上报记录:', utils.timeconv(data.updateTime));
 
         // IamOK 系统的 Bug，这里模仿它的行为
-        // data.visitingRelativesOrTravelToWenzhouDate = 1584115200000;
+        //
+        // Bug 是这样的：
+        //   系统首先将所有时间相关的变量都初始化为当前日期，然后根据填写状况再去修正。
+        //   对于温州，系统判断温州选项是不是'否'，如果是'否'，则将日期修改为null。
+        //   然而现在温州选项去掉了，所以恒为null，导致这个变量没有被修正。
+        data.visitingRelativesOrTravelToWenzhouDate = new Date(new Date().toLocaleDateString()).getTime();
 
         return { data, headers };
     });
