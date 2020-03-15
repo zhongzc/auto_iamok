@@ -50,10 +50,11 @@ function encodeSSO(username, password) {
         let token = cookies.map((s) => s.split(';')[0]).sort().join('; ');
 
         // 按照教务系统加密规则进行加密
-        let lt_reg = /<input type="hidden" id="lt" name="lt" value="[^"]+/g;
-        let ex_reg = /<input type="hidden" name="execution" value="[^"]+/g;
-        let lt = lt_reg.exec(data)[0].substr(46);
-        let execution = ex_reg.exec(data)[0].substr(45);
+        let lt_reg = /<input type="hidden" id="lt" name="lt" value="([^"]+)/;
+        let ex_reg = /<input type="hidden" name="execution" value="([^"]+)/;
+
+        let lt = lt_reg.exec(data)[1];
+        let execution = ex_reg.exec(data)[1];
         let rsa = des(username + password + lt, '1', '2', '3');
 
         log.info('构造密钥成功!');
