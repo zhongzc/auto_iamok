@@ -15,7 +15,7 @@ function timeConverter(timestamp) {
     return time;
 }
 
-const justRedir = {
+const mustRedir = {
     maxRedirects: 0,
     validateStatus: function (status) {
         return status == 302;
@@ -38,6 +38,8 @@ function initLog() {
         },
       });
     log.enableAll();
+
+    return log;
 }
 
-module.exports = { timeconv: timeConverter, redirOnce: justRedir, initLog };
+module.exports = { timeconv: timeConverter, mustRedir, initLog };

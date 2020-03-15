@@ -5,7 +5,6 @@
 const des = require('./des.js');
 const utils = require('./utils.js');
 const axios = require('axios');
-const log = require('loglevel');
 const chalk = require('chalk');
 const querystring = require('querystring');
 const readlineSync = require('readline-sync');
@@ -22,7 +21,7 @@ const password = readlineSync.question(`${chalk.cyan('密码: ')}`, { hideEchoBa
 const raw_interval = readlineSync.question(`${chalk.cyan('上报周期 (单位: 分钟): ')}`);
 const interval = parseFloat(raw_interval) * 1000 * 60;
 
-utils.initLog();
+const log = utils.initLog();
 main();
 setInterval(main, interval);
 
@@ -35,7 +34,7 @@ function main() {
         .then(postData)
         .then(() => { log.info('下次上报时间:', utils.timeconv(new Date((new Date()).getTime() + interval))) })
         .catch((e) => {
-            log.error({ '失败:': e });
+            log.error('失败:', e);
         });
 }
 
@@ -47,18 +46,18 @@ function encodeSSO(username, password) {
         }
     }).then(({ headers: { 'set-cookie': cookies }, data }) => {
         // 获取 session token
-        let token = cookies.map((s) => s.split(';')[0]).sort().join('; ');
+        const token = cookies.map((s) => s.split(';')[0]).sort().join('; ');
 
         // 按照教务系统加密规则进行加密
-        let lt_reg = /<input type="hidden" id="lt" name="lt" value="([^"]+)/;
-        let ex_reg = /<input type="hidden" name="execution" value="([^"]+)/;
+        const lt_reg = /<input type="hidden" id="lt" name="lt" value="([^"]+)/;
+        const ex_reg = /<input type="hidden" name="execution" value="([^"]+)/;
 
-        let lt = lt_reg.exec(data)[1];
-        let execution = ex_reg.exec(data)[1];
-        let rsa = des(username + password + lt, '1', '2', '3');
+        const lt = lt_reg.exec(data)[1];
+        const execution = ex_reg.exec(data)[1];
+        const rsa = des(username + password + lt, '1', '2', '3');
 
         log.info('构造密钥成功!');
-        return { token, lt, execution, rsa }
+        return { token, lt, execution, rsa };
     });
 }
 
@@ -73,7 +72,7 @@ function loginSSO({ token, lt, execution, rsa }) {
         execution,
         _eventId: 'submit'
     }), {
-        ...utils.redirOnce,
+        ...utils.mustRedir,
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
             'Origin': 'https://sso.scut.edu.cn',
@@ -91,14 +90,14 @@ function loginSSO({ token, lt, execution, rsa }) {
 function fetchToken({ location }) {
     // 从此重定向地址处取登录 token
     return axios.get(location, {
-        ...utils.redirOnce,
+        ...utils.mustRedir,
         headers: {
             'Referer': SSO_URL,
             'User-Agent': USER_AGENT,
         }
     }).then(({ headers: { 'set-cookie': cookies } }) => {
         // 新登录 token
-        let token = cookies.map((s) => s.split(';')[0]).sort().join('; ');
+        const token = cookies.map((s) => s.split(';')[0]).sort().join('; ');
         return { token };
     });
 }
@@ -107,7 +106,7 @@ function loginIamOK({ token }) {
     log.info('登录 IamOK 中 ...');
 
     return axios.get('https://iamok.scut.edu.cn/cas/login', {
-        ...utils.redirOnce,
+        ...utils.mustRedir,
         headers: {
             'Cookie': token,
             'Referer': SSO_URL,
